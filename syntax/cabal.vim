@@ -5,6 +5,7 @@
 if exists("b:current_syntax")
   finish
 endif
+let b:current_syntax = "cabal"
 
 if version < 600
   syntax clear
