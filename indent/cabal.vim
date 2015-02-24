@@ -9,10 +9,10 @@ setlocal autoindent indentexpr=CabalIndent(v:lnum)
 setlocal indentkeys=!^F,=~else,0{,0},o,O,
 
 fun! CabalIndent(l)
-  if a:l == 1 " first line
+  let l:prev = getline(a:l-1)
+  if a:l == 1 || l:prev =~ '^\s*$' " first or empty line
     return 0
   endif
-  let l:prev = getline(a:l-1)
   if l:prev =~ '^\s*\k\+:$' " cabal key
     return indent(a:l-1) + shiftwidth()
   endif
@@ -40,7 +40,7 @@ fun! CabalIndent(l)
   if l:prev =~ '^executable\|library\|test-suite\|benchmark\|source-repository'
     return indent(a:l-1) + shiftwidth()
   endif
-  return 0 " ???
+  return indent(a:l-1) - shiftwidth() " end of value, probably
 endf
 
 fun! cabal#last_key(l)
