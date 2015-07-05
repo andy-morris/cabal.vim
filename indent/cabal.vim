@@ -8,6 +8,19 @@ let b:did_indent = 1
 setlocal autoindent indentexpr=CabalIndent(v:lnum)
 setlocal indentkeys=!^F,=~else,0{,0},o,O,
 
+fun! s:previndent(l)
+  let l:l = a:l
+  let l:i = indent(l:l)
+  while l:l > 0
+    let l:i2 = indent(l:l)
+    if l:i2 < l:i
+      return l:i2
+    endif
+    let l:l -= 1
+  endw
+  return 0
+endf
+
 fun! CabalIndent(l)
   let l:prev = getline(a:l-1)
   if a:l == 1 || l:prev =~ '^\s*$' " first or empty line
@@ -40,7 +53,7 @@ fun! CabalIndent(l)
   if l:prev =~ '^executable\|library\|test-suite\|benchmark\|source-repository'
     return indent(a:l-1) + shiftwidth()
   endif
-  return indent(a:l-1) - shiftwidth() " end of value, probably
+  return s:previndent(a:l) " end of value, probably
 endf
 
 fun! cabal#last_key(l)
